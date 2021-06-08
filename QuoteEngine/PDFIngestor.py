@@ -16,9 +16,9 @@ class PDFIngestor(IngestorInterface):
         if not cls.can_ingest(path):
             raise Exception("Cannot ingest exception")
         # creating a temporary file
-        tmp = 'tmp/' + str(random.randint(0, 1000)) + '.txt'
+        tmp = f'./tmp/{random.randint(0, 1000)}.txt'
         try:
-            subprocess.run(['pdftotext', "-layout", path, tmp], timeout=2)
+            call = subprocess.call(['pdftotext', path, tmp])
             with open(tmp, 'r') as file:
                 file_lines_content = file.readlines()
         except FileNotFoundError as filenotfounderr:
