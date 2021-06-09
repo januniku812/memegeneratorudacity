@@ -7,7 +7,7 @@ from QuoteEngine import Ingestor
 from MemeEngine import MemeEngine
 app = Flask(__name__)
 
-meme = MemeEngine('./tmp')
+meme = MemeEngine('./static')
 
 
 def setup():
@@ -38,10 +38,15 @@ quotes, imgs = setup()
 @app.route('/')
 def meme_rand():
     """ Generate a random meme """
-    img = imgs[random.randint(0, len(imgs))]
-    quote = quotes[random.randint(0, len(quotes))]
-    path = meme.make_meme(img, quote.body, quote.author)
-    return render_template('meme.html', path=path)
+    img = imgs[random.randint(0, len(imgs)-1)]
+    quotes_list_one = quotes[random.randint(0, len(quotes)-1)]
+    quote = random.choice(quotes_list_one)
+    if quote and img:
+        path = meme.make_meme(img, quote.body, quote.author)
+        return render_template('meme.html', path=path)
+    else:
+        path = meme.make_meme('./_data/photos/dog/xander_1.jpg', "Quote", "Author")
+        return render_template('meme.html', path=path)
 
 
 @app.route('/create', methods=['GET'])
