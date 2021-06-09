@@ -27,7 +27,6 @@ class MemeEngine:
 
         if text:
             img_draw = ImageDraw.Draw(img)
-            fnt_size = int(height/(len(line_to_draw.strip(" ")))) * 2
             fnt_path = './fonts/LilitaOne-Regular.ttf'
             img_font = ImageFont.truetype(fnt_path, int(height/11))
 
