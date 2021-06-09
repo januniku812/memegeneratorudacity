@@ -29,6 +29,7 @@ def setup():
     for root, dirs, files in os.walk(images_path):
         imgs = [os.path.join(root, name) for name in files]
 
+    quotes.remove(None)
     return quotes, imgs
 
 
@@ -38,8 +39,8 @@ quotes, imgs = setup()
 @app.route('/')
 def meme_rand():
     """ Generate a random meme """
-    img = imgs[random.randint(0, len(imgs)-1)]
-    quotes_list_one = quotes[random.randint(0, len(quotes)-1)]
+    img = random.choice(imgs)
+    quotes_list_one = random.choice(quotes)
     quote = random.choice(quotes_list_one)
     if quote and img:
         path = meme.make_meme(img, quote.body, quote.author)
