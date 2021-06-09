@@ -1,48 +1,59 @@
+import argparse
+import os
 import random
-from PIL import ImageDraw, ImageFont
-from PIL.Image import Image
+
+from MemeEngine import MemeEngine
+from QuoteEngine import QuoteModel, Ingestor
 
 
-class MemeEngine:
-    def __init__(self, output_path):
-        """Create instance of class"""
-        self.output_path = output_path
+def generate_meme(path=None, body=None, author=None):
+    """ Generate a meme given an path and a quote """
+    img = None
+    quote = None
 
-    def make_meme(self, path, text, author, width=500):
-        """Create meme with given text and author"""
-        global img, img_font, height
-        try:
-            img = Image.open(path)
-        except Exception as ex:
-            print(f'Exception: {ex}')
+    if path is None:
+        images = "./_data/photos/dog/"
+        imgs = []
+        for root, dirs, files in os.walk(images):
+            imgs = [os.path.join(root, name) for name in files]
 
-        if width:
-            ratio = width / float(img.size[0])
-            height = int(ratio * float(img.size[1]))
-            size = (width, height)
-            img = img.resize(size, Image.NEAREST)
+        img = random.choice(imgs)
+    else:
+        img = path[0]
 
-        if text:
-            img_draw = ImageDraw.Draw(img)
-            img_font = ImageFont.truetype('./fonts/LilitaOne-Regular.ttf', int(height / 10))
+    if body is None:
+        quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
+                       './_data/DogQuotes/DogQuotesDOCX.docx',
+                       './_data/DogQuotes/DogQuotesPDF.pdf',
+                       './_data/DogQuotes/DogQuotesCSV.csv']
+        quotes = []
+        for f in quote_files:
+            quotes.append(Ingestor.Ingestor.parse(f))
+            print(quotes)
+        quotes_list_one = quotes[random.randint(0, 3)]
+        quote = random.choice(quotes_list_one)
+        print(quote)
+    else:
+        if author is None:
+            raise Exception('Author Required if Body is Used')
+        quote = QuoteModel(body, author)
 
-        # calculate x axis range for the text
-        x_min = (img.size[0] / 10)
-        x_max = (img.size[0] / 2)
-        range_x = random.randint(x_min, x_max)
+    meme = MemeEngine('./static')
+    path = meme.make_meme(img, quote.body, quote.author)
+    return path
 
-        lines_to_draw = [text, "- " + author]
 
-        # Calculate y axis for text display
-        y_min = (img.size[1] / 20)
-        y_max = img.size[1]
-        range_y = random.randint(y_min, y_max)
+if __name__ == "__main__":
+    # path - path to an image file
+    # body - quote body to add to the image
+    # author - quote author to add to the image
+    parser = argparse.ArgumentParser(description="Welcome to Meme Generator.")
+    parser.add_argument('--path', type=str,
+                        default=None, help="path to an image file")
+    parser.add_argument('--body', type=str,
+                        default=None, help="quote body to add to the image")
+    parser.add_argument('--author', type=str,
+                        default=None, help="quote author to add to the image")
 
-        range_x_y = (range_x, range_y)
-        # draw text
-        for line in lines_to_draw:
-            img_draw.text(range_x_y, line, img_font, "left")
-
-        out_path = f'{self.output_path}/{random.randint(0, 1000000)}.jpeg'
-        img.save(out_path)
-        return out_path
+    args = parser.parse_args()
+    print(generate_meme(args.path, args.body, args.author))
