@@ -19,7 +19,8 @@ def setup():
     # quote_files variable
     quotes = []
     for file in quote_files:
-        quotes.append(Ingestor.Ingestor.parse(file))
+        if Ingestor.Ingestor.parse(file) is not None:
+            quotes.append(Ingestor.Ingestor.parse(file))
 
     # image path
     images_path = "./_data/photos/dog/"
@@ -29,7 +30,6 @@ def setup():
     for root, dirs, files in os.walk(images_path):
         imgs = [os.path.join(root, name) for name in files]
 
-    quotes.remove(None)
     return quotes, imgs
 
 
